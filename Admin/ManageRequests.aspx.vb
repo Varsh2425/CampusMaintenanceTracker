@@ -1,7 +1,11 @@
 ﻿Imports System
 Imports System.Data
+Imports System.IO
+Imports System.Net
+Imports System.Text
 Imports System.Web.UI
 Imports System.Web.UI.WebControls
+Imports System.Xml
 Imports MySql.Data.MySqlClient
 
 Partial Class Admin_ManageRequests
@@ -38,36 +42,16 @@ Partial Class Admin_ManageRequests
     End Sub
 
 
-
+    '=========================================================
+    ' LOAD REQUESTS THROUGH WEB SERVICE
+    '=========================================================
     Private Sub LoadRequests()
-
-        Dim con As MySqlConnection = Nothing
 
         Try
 
-            con = DBConnection.GetConnection()
-
-            con.Open()
-
-
-            Dim query As String = _
-                "SELECT RequestID, UserID, Category, Location, " & _
-                "Description, DateReported, Status, AssignedStaffID " & _
-                "FROM maintenancerequests " & _
-                "ORDER BY RequestID DESC"
-
-
-            Dim cmd As New MySqlCommand(query, con)
-
-            Dim adapter As New MySqlDataAdapter(cmd)
-
-            Dim dt As New DataTable()
-
-            adapter.Fill(dt)
-
+            Dim dt As DataTable = GetRequestsFromWebService()
 
             gvRequests.DataSource = dt
-
             gvRequests.DataBind()
 
 
@@ -90,27 +74,226 @@ Partial Class Admin_ManageRequests
             lblMessage.CssClass = "error"
 
             lblMessage.Text = _
-                "Error loading requests: " & ex.Message
-
-
-        Finally
-
-            If con IsNot Nothing Then
-
-                If con.State = ConnectionState.Open Then
-
-                    con.Close()
-
-                End If
-
-            End If
+                "Error loading requests through Web Service: " &
+                ex.Message
 
         End Try
 
     End Sub
 
 
+    '=========================================================
+    ' CALL ASMX WEB SERVICE
+    '=========================================================
+    Private Function GetRequestsFromWebService() As DataTable
 
+        Dim dt As New DataTable()
+
+        dt.Columns.Add("RequestID", GetType(Integer))
+        dt.Columns.Add("UserID", GetType(Integer))
+        dt.Columns.Add("Category", GetType(String))
+        dt.Columns.Add("Location", GetType(String))
+        dt.Columns.Add("Description", GetType(String))
+        dt.Columns.Add("DateReported", GetType(DateTime))
+        dt.Columns.Add("Status", GetType(String))
+        dt.Columns.Add("AssignedStaffID", GetType(Integer))
+
+
+        Dim url As String = _
+            "http://localhost:26157/CampusMaintenanceTracker/MaintenanceService.asmx"
+
+
+        Dim soapEnvelope As String =
+            "<?xml version=""1.0"" encoding=""utf-8""?>" &
+            "<soap:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" " &
+            "xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" " &
+            "xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/"">" &
+            "<soap:Body>" &
+            "<GetAllRequests xmlns=""http://campusmaintenancetracker/"" />" &
+            "</soap:Body>" &
+            "</soap:Envelope>"
+
+
+        Dim request As HttpWebRequest =
+            CType(
+                WebRequest.Create(url), 
+                HttpWebRequest)
+
+
+        request.Method = "POST"
+
+        request.ContentType = "text/xml; charset=utf-8"
+
+        request.Headers.Add(
+            "SOAPAction",
+            """http://campusmaintenancetracker/GetAllRequests""")
+
+
+        Dim bytes() As Byte =
+            Encoding.UTF8.GetBytes(soapEnvelope)
+
+
+        request.ContentLength = bytes.Length
+
+
+        Using stream As Stream =
+            request.GetRequestStream()
+
+            stream.Write(
+                bytes,
+                0,
+                bytes.Length)
+
+        End Using
+
+
+        Dim response As HttpWebResponse =
+            CType(
+                request.GetResponse(), 
+                HttpWebResponse)
+
+
+        Dim responseText As String = ""
+
+
+        Using reader As New StreamReader(
+            response.GetResponseStream())
+
+            responseText = reader.ReadToEnd()
+
+        End Using
+
+
+        Dim xmlDoc As New XmlDocument()
+
+        xmlDoc.LoadXml(responseText)
+
+
+        Dim namespaceManager As New XmlNamespaceManager(
+            xmlDoc.NameTable)
+
+
+        namespaceManager.AddNamespace(
+            "soap",
+            "http://schemas.xmlsoap.org/soap/envelope/")
+
+
+        namespaceManager.AddNamespace(
+            "m",
+            "http://campusmaintenancetracker/")
+
+
+        Dim resultNode As XmlNode =
+            xmlDoc.SelectSingleNode(
+                "//m:GetAllRequestsResponse/m:GetAllRequestsResult",
+                namespaceManager)
+
+
+        If resultNode Is Nothing Then
+
+            Throw New Exception(
+                "Web Service did not return maintenance request data.")
+
+        End If
+
+
+        Dim requestNodes As XmlNodeList =
+            resultNode.SelectNodes(
+                ".//*[local-name()='MaintenanceRequests']")
+
+
+        For Each requestNode As XmlNode In requestNodes
+
+            Dim row As DataRow = dt.NewRow()
+
+
+            'Request ID
+
+            row("RequestID") =
+                Convert.ToInt32(
+                    requestNode.SelectSingleNode(
+                        "*[local-name()='RequestID']").InnerText)
+
+
+            'User ID
+
+            row("UserID") =
+                Convert.ToInt32(
+                    requestNode.SelectSingleNode(
+                        "*[local-name()='UserID']").InnerText)
+
+
+            'Category
+
+            row("Category") =
+                requestNode.SelectSingleNode(
+                    "*[local-name()='Category']").InnerText
+
+
+            'Location
+
+            row("Location") =
+                requestNode.SelectSingleNode(
+                    "*[local-name()='Location']").InnerText
+
+
+            'Description
+
+            row("Description") =
+                requestNode.SelectSingleNode(
+                    "*[local-name()='Description']").InnerText
+
+
+            'Date Reported
+
+            row("DateReported") =
+                Convert.ToDateTime(
+                    requestNode.SelectSingleNode(
+                        "*[local-name()='DateReported']").InnerText)
+
+
+            'Status
+
+            row("Status") =
+                requestNode.SelectSingleNode(
+                    "*[local-name()='Status']").InnerText
+
+
+            'Assigned Staff ID
+
+            Dim assignedNode As XmlNode =
+                requestNode.SelectSingleNode(
+                    "*[local-name()='AssignedStaffID']")
+
+
+            If assignedNode Is Nothing OrElse
+               assignedNode.InnerText = "" Then
+
+                row("AssignedStaffID") =
+                    DBNull.Value
+
+            Else
+
+                row("AssignedStaffID") =
+                    Convert.ToInt32(
+                        assignedNode.InnerText)
+
+            End If
+
+
+            dt.Rows.Add(row)
+
+        Next
+
+
+        Return dt
+
+    End Function
+
+
+    '=========================================================
+    ' GRIDVIEW ROW DATA BOUND
+    '=========================================================
     Protected Sub gvRequests_RowDataBound(
         ByVal sender As Object,
         ByVal e As GridViewRowEventArgs)
@@ -121,7 +304,6 @@ Partial Class Admin_ManageRequests
             Return
 
         End If
-
 
 
         '=============================
@@ -148,12 +330,13 @@ Partial Class Admin_ManageRequests
         End If
 
 
-        If ddlStatus.Items.FindByValue(currentStatus) IsNot Nothing Then
+        If ddlStatus.Items.FindByValue(
+            currentStatus) IsNot Nothing Then
 
-            ddlStatus.SelectedValue = currentStatus
+            ddlStatus.SelectedValue =
+                currentStatus
 
         End If
-
 
 
         '=============================
@@ -175,7 +358,6 @@ Partial Class Admin_ManageRequests
                 "0"))
 
 
-
         'Get request category
 
         Dim category As String =
@@ -185,13 +367,14 @@ Partial Class Admin_ManageRequests
                     "Category"))
 
 
-
-        Dim con As MySqlConnection = Nothing
+        Dim con As MySqlConnection =
+            Nothing
 
 
         Try
 
-            con = DBConnection.GetConnection()
+            con =
+                DBConnection.GetConnection()
 
             con.Open()
 
@@ -233,7 +416,6 @@ Partial Class Admin_ManageRequests
             reader.Close()
 
 
-
             'Get currently assigned staff
 
             Dim assignedStaffID As String =
@@ -243,16 +425,19 @@ Partial Class Admin_ManageRequests
                         "AssignedStaffID"))
 
 
-            If String.IsNullOrEmpty(assignedStaffID) Then
+            If String.IsNullOrEmpty(
+                assignedStaffID) Then
 
                 assignedStaffID = "0"
 
             End If
 
 
-            If ddlStaff.Items.FindByValue(assignedStaffID) IsNot Nothing Then
+            If ddlStaff.Items.FindByValue(
+                assignedStaffID) IsNot Nothing Then
 
-                ddlStaff.SelectedValue = assignedStaffID
+                ddlStaff.SelectedValue =
+                    assignedStaffID
 
             End If
 
@@ -271,7 +456,8 @@ Partial Class Admin_ManageRequests
 
             If con IsNot Nothing Then
 
-                If con.State = ConnectionState.Open Then
+                If con.State =
+                    ConnectionState.Open Then
 
                     con.Close()
 
@@ -284,13 +470,16 @@ Partial Class Admin_ManageRequests
     End Sub
 
 
-
+    '=========================================================
+    ' UPDATE REQUEST BUTTON
+    '=========================================================
     Protected Sub gvRequests_RowCommand(
         ByVal sender As Object,
         ByVal e As GridViewCommandEventArgs)
 
 
-        If e.CommandName <> "UpdateRequest" Then
+        If e.CommandName <>
+            "UpdateRequest" Then
 
             Return
 
@@ -312,7 +501,6 @@ Partial Class Admin_ManageRequests
                     GridViewRow)
 
 
-
             'Get status
 
             Dim ddlStatus As DropDownList =
@@ -323,7 +511,6 @@ Partial Class Admin_ManageRequests
 
             Dim newStatus As String =
                 ddlStatus.SelectedValue
-
 
 
             'Get staff
@@ -339,7 +526,6 @@ Partial Class Admin_ManageRequests
                     ddlStaff.SelectedValue)
 
 
-
             'Update database
 
             UpdateRequest(
@@ -348,7 +534,9 @@ Partial Class Admin_ManageRequests
                 staffID)
 
 
-            lblMessage.CssClass = "message"
+            lblMessage.CssClass =
+                "message"
+
 
             lblMessage.Text =
                 "Request #" &
@@ -361,7 +549,9 @@ Partial Class Admin_ManageRequests
 
         Catch ex As Exception
 
-            lblMessage.CssClass = "error"
+            lblMessage.CssClass =
+                "error"
+
 
             lblMessage.Text =
                 "Error updating request: " &
@@ -372,19 +562,23 @@ Partial Class Admin_ManageRequests
     End Sub
 
 
-
+    '=========================================================
+    ' UPDATE REQUEST IN DATABASE
+    '=========================================================
     Private Sub UpdateRequest(
         ByVal requestID As Integer,
         ByVal newStatus As String,
         ByVal staffID As Integer)
 
 
-        Dim con As MySqlConnection = Nothing
+        Dim con As MySqlConnection =
+            Nothing
 
 
         Try
 
-            con = DBConnection.GetConnection()
+            con =
+                DBConnection.GetConnection()
 
             con.Open()
 
@@ -433,7 +627,8 @@ Partial Class Admin_ManageRequests
 
             If con IsNot Nothing Then
 
-                If con.State = ConnectionState.Open Then
+                If con.State =
+                    ConnectionState.Open Then
 
                     con.Close()
 

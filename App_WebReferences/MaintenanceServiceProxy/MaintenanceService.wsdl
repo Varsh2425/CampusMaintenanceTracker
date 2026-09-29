@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://campusmaintenancetracker/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://campusmaintenancetracker/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://campusmaintenancetracker/">
+      <s:element name="GetAllRequests">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetAllRequestsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAllRequestsResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRequestById">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="requestId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRequestByIdResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRequestByIdResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRequestsByUser">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="userId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRequestsByUserResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRequestsByUserResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRequestsByStatus">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="status" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRequestsByStatusResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRequestsByStatusResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetStaff">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetStaffResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetStaffResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetAllRequestsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAllRequests" />
+  </wsdl:message>
+  <wsdl:message name="GetAllRequestsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAllRequestsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetRequestByIdSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRequestById" />
+  </wsdl:message>
+  <wsdl:message name="GetRequestByIdSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRequestByIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetRequestsByUserSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRequestsByUser" />
+  </wsdl:message>
+  <wsdl:message name="GetRequestsByUserSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRequestsByUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetRequestsByStatusSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRequestsByStatus" />
+  </wsdl:message>
+  <wsdl:message name="GetRequestsByStatusSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRequestsByStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetStaffSoapIn">
+    <wsdl:part name="parameters" element="tns:GetStaff" />
+  </wsdl:message>
+  <wsdl:message name="GetStaffSoapOut">
+    <wsdl:part name="parameters" element="tns:GetStaffResponse" />
+  </wsdl:message>
+  <wsdl:portType name="MaintenanceServiceSoap">
+    <wsdl:operation name="GetAllRequests">
+      <wsdl:input message="tns:GetAllRequestsSoapIn" />
+      <wsdl:output message="tns:GetAllRequestsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRequestById">
+      <wsdl:input message="tns:GetRequestByIdSoapIn" />
+      <wsdl:output message="tns:GetRequestByIdSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRequestsByUser">
+      <wsdl:input message="tns:GetRequestsByUserSoapIn" />
+      <wsdl:output message="tns:GetRequestsByUserSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRequestsByStatus">
+      <wsdl:input message="tns:GetRequestsByStatusSoapIn" />
+      <wsdl:output message="tns:GetRequestsByStatusSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetStaff">
+      <wsdl:input message="tns:GetStaffSoapIn" />
+      <wsdl:output message="tns:GetStaffSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="MaintenanceServiceSoap" type="tns:MaintenanceServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetAllRequests">
+      <soap:operation soapAction="http://campusmaintenancetracker/GetAllRequests" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRequestById">
+      <soap:operation soapAction="http://campusmaintenancetracker/GetRequestById" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRequestsByUser">
+      <soap:operation soapAction="http://campusmaintenancetracker/GetRequestsByUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRequestsByStatus">
+      <soap:operation soapAction="http://campusmaintenancetracker/GetRequestsByStatus" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStaff">
+      <soap:operation soapAction="http://campusmaintenancetracker/GetStaff" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="MaintenanceServiceSoap12" type="tns:MaintenanceServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetAllRequests">
+      <soap12:operation soapAction="http://campusmaintenancetracker/GetAllRequests" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRequestById">
+      <soap12:operation soapAction="http://campusmaintenancetracker/GetRequestById" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRequestsByUser">
+      <soap12:operation soapAction="http://campusmaintenancetracker/GetRequestsByUser" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRequestsByStatus">
+      <soap12:operation soapAction="http://campusmaintenancetracker/GetRequestsByStatus" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStaff">
+      <soap12:operation soapAction="http://campusmaintenancetracker/GetStaff" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="MaintenanceService">
+    <wsdl:port name="MaintenanceServiceSoap" binding="tns:MaintenanceServiceSoap">
+      <soap:address location="http://localhost:26157/CampusMaintenanceTracker/MaintenanceService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="MaintenanceServiceSoap12" binding="tns:MaintenanceServiceSoap12">
+      <soap12:address location="http://localhost:26157/CampusMaintenanceTracker/MaintenanceService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

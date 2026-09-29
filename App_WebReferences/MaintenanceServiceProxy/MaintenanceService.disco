@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<discovery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/disco/">
+  <contractRef ref="http://localhost:26157/CampusMaintenanceTracker/MaintenanceService.asmx?wsdl" docRef="http://localhost:26157/CampusMaintenanceTracker/MaintenanceService.asmx" xmlns="http://schemas.xmlsoap.org/disco/scl/" />
+  <soap address="http://localhost:26157/CampusMaintenanceTracker/MaintenanceService.asmx" xmlns:q1="http://campusmaintenancetracker/" binding="q1:MaintenanceServiceSoap" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
+  <soap address="http://localhost:26157/CampusMaintenanceTracker/MaintenanceService.asmx" xmlns:q2="http://campusmaintenancetracker/" binding="q2:MaintenanceServiceSoap12" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
+</discovery>
